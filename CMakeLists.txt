@@ -4,7 +4,7 @@ project(Bignum)
 set(CMAKE_C_STANDARD 11)
 
 set(SOURCE_LIB 
-    src/main.c
+    src/ff.c
 )
 
 add_library(finite_fields STATIC ${SOURCE_LIB})	
@@ -15,7 +15,7 @@ target_link_libraries(finite_fields m)
 target_compile_options(finite_fields PRIVATE -Wall -g)
 
 # Executable tests
-add_executable(tests tests/main.c)
+add_executable(tests tests/ff_test.c)
 target_link_libraries(tests finite_fields)
 
 enable_testing()
@@ -33,8 +33,8 @@ endforeach ()
 
 # Formatter
 add_custom_target (format
-     COMMAND clang-format -style=GNU -i ${ALL_SOURCE_FILES})
+     COMMAND clang-format -style=Google -i ${ALL_SOURCE_FILES})
 
 # Memcheck
 add_custom_target(memcheck 
-    COMMAND valgrind --leak-check=full --verbose ./tests)
+    COMMAND valgrind --leak-check=full -s ./tests)
