@@ -72,7 +72,7 @@ ff_elem_t ff_sub(ff_elem_t fst, ff_elem_t snd) {
   return res;
 }
 
-#ifdef 0
+#if 0
 // Return the index of the last non-zero element of polynomial
 // If all elements are 0 returns -1
 static int real_deg(uint8_t deg, uint8_t *coeffs){
@@ -85,7 +85,7 @@ static int real_deg(uint8_t deg, uint8_t *coeffs){
 }
 #endif
 
-#ifdef 0
+#if 0
 ff_elem_t ff_mult(ff_elem_t fst, ff_elem_t snd){
     if (!ff_are_eq(fst->ff, snd->ff)) return NULL;
 
