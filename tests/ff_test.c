@@ -330,7 +330,30 @@ MU_TEST(mult_special_ff_2_2) {
   mu_check(are_eq);
 }
 
-MU_TEST_SUITE(mult_tests) { MU_RUN_TEST(mult_special_ff_2_2); }
+MU_TEST(mult_special_ff_3_2) {
+  uint8_t fst_coeffs[] = {2, 1};
+  struct ff_elem fst = {.ff = &ff_3_2, .deg = 1, .coeffs = fst_coeffs};
+  // 2x+1 * x = 2x^2 + x % x^2 + x + 1 210 % 111
+  uint8_t snd_coeffs[] = {1, 0};
+  struct ff_elem snd = {.ff = &ff_3_2, .deg = 1, .coeffs = snd_coeffs};
+
+  uint8_t expected_coeffs[] = {1, 1};
+  struct ff_elem expected = {
+      .ff = &ff_3_2, .deg = 1, .coeffs = expected_coeffs};
+
+  ff_elem_t mult_res = ff_mult(&fst, &snd);
+
+  bool are_eq = ff_elems_are_eq(mult_res, &expected);
+
+  ff_elem_free(mult_res);
+
+  mu_check(are_eq);
+}
+
+MU_TEST_SUITE(mult_tests) {
+  MU_RUN_TEST(mult_special_ff_2_2);
+  MU_RUN_TEST(mult_special_ff_3_2);
+}
 
 int main() {
   MU_RUN_SUITE(get_zero_tests);
