@@ -21,6 +21,7 @@ struct ff_elem {
 typedef struct ff_elem *ff_elem_t;
 
 ff_elem_t ff_create_elem(ff_t ff);
+ff_elem_t ff_init_elem(ff_t ff, uint8_t *coeffs);
 
 ff_elem_t ff_get_zero(ff_t ff);
 ff_elem_t ff_get_identity(ff_t ff);
