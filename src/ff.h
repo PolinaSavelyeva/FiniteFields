@@ -31,7 +31,7 @@ extern const p_ff_poly_t p_ff_2_16;
 extern const p_ff_poly_t p_ff_2_32;
 
 ff_elem_t ff_create_elem(c_ff_t ff);
-ff_elem_t ff_copy(c_ff_elem_t elem);
+ff_elem_t ff_copy (c_ff_elem_t elem);
 
 ff_elem_t ff_get_zero(c_ff_t ff);
 ff_elem_t ff_get_identity(c_ff_t ff);
@@ -43,7 +43,6 @@ ff_elem_t ff_add(c_ff_elem_t fst, c_ff_elem_t snd);
 ff_elem_t ff_sub(c_ff_elem_t fst, c_ff_elem_t snd);
 ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd);
 ff_elem_t ff_div(c_ff_elem_t fst, c_ff_elem_t snd);
-
 ff_elem_t ff_inv_add(c_ff_elem_t elem);
 ff_elem_t ff_inv_mult(c_ff_elem_t elem);
 
