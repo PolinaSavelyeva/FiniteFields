@@ -82,6 +82,8 @@ void ff_elem_free(ff_elem_t fst) {
 }
 
 ff_elem_t ff_sub(c_ff_elem_t fst, c_ff_elem_t snd) {
+  if (!fst || !snd || !ff_are_eq(fst->ff, snd->ff)) return NULL;
+
   ff_elem_t inv_snd = ff_inv_add(snd);
   ff_elem_t res = ff_add(fst, inv_snd);
   ff_elem_free(inv_snd);
@@ -99,8 +101,25 @@ static int real_deg(uint8_t deg, const uint8_t *coeffs) {
   return -1;
 }
 
+static uint64_t uint64_pow(uint64_t base, uint64_t power) {
+  uint64_t res = 1;
+
+  while (power > 0) {
+    if (power % 2) {
+      res *= base;
+    }
+    power /= 2;
+    base *= base;
+  }
+  return res;
+}
+
+static int ff_real_deg(c_ff_elem_t elem) {
+  return real_deg(elem->deg, elem->coeffs);
+}
+
 ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
-  if (!ff_are_eq(fst->ff, snd->ff)) return NULL;
+  if (!fst || !snd || !ff_are_eq(fst->ff, snd->ff)) return NULL;
 
   uint8_t mult_deg = 2 * fst->deg;
   uint8_t *coeffs = calloc(mult_deg + 1, 1);
@@ -115,7 +134,9 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
   int real_deg_res = real_deg(mult_deg, coeffs);
 
   for (uint8_t i = mult_deg - real_deg_res; i <= mult_deg - fst->ff->deg; i++) {
-    uint8_t q = pow(fst->ff->coeffs[0], fst->ff->p_ff - 2) * fst->coeffs[i];
+    uint8_t q =
+        (uint64_pow(fst->ff->coeffs[0], fst->ff->p_ff - 2) * fst->coeffs[i]) %
+        fst->ff->p_ff;
     for (uint8_t j = 0; j <= fst->ff->deg; j++) {
       int16_t tmp =
           ((int16_t)coeffs[i + j] - (int16_t)(q * fst->ff->coeffs[j])) %
@@ -131,10 +152,52 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
   return res;
 }
 
-#if 0
-ff_elem_t ff_inv_mult(ff_elem_t fst, ff_elem_t snd){ 
+ff_elem_t ff_copy(c_ff_elem_t elem) {
+  ff_elem_t res = malloc(sizeof(struct ff_elem));
+  res->deg = elem->deg;
+  res->ff = elem->ff;
+  res->coeffs = calloc(res->deg + 1, 1);
+  memcpy(res->coeffs, elem->coeffs, res->deg + 1);
+
+  return res;
 }
-#endif
+
+static ff_elem_t ff_elem_pow(c_ff_elem_t base, uint64_t power) {
+  ff_elem_t tmp_base = ff_copy(base);
+  ff_elem_t res = ff_get_identity(base->ff);
+
+  while (power > 0) {
+    if (power % 2) {
+      ff_elem_t tmp = ff_mult(res, tmp_base);
+      ff_elem_free(res);
+      res = tmp;
+    }
+    power /= 2;
+    ff_elem_t tmp = ff_mult(tmp_base, tmp_base);
+    ff_elem_free(tmp_base);
+    tmp_base = tmp;
+  }
+  ff_elem_free(tmp_base);
+
+  return res;
+}
+
+ff_elem_t ff_inv_mult(c_ff_elem_t elem) {
+  if (!elem || ff_real_deg(elem) == -1) return NULL;
+
+  return ff_elem_pow(elem, uint64_pow(elem->ff->p_ff, elem->ff->deg) - 2);
+}
+
+ff_elem_t ff_div(c_ff_elem_t fst, c_ff_elem_t snd) {
+  if (!fst || !snd || !ff_are_eq(fst->ff, snd->ff)) return NULL;
+
+  ff_elem_t snd_inv = ff_inv_mult(snd);
+  ff_elem_t res = snd_inv ? ff_mult(fst, snd_inv) : NULL;
+
+  ff_elem_free(snd_inv);
+
+  return res;
+}
 
 ff_elem_t ff_2_8_init_elem(uint8_t coeffs) {
   ff_elem_t res = ff_create_elem(&ff_2_8);
