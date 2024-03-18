@@ -11,6 +11,7 @@ struct p_ff_poly {
 
 typedef struct p_ff_poly *p_ff_poly_t;
 typedef struct p_ff_poly *ff_t;
+typedef const ff_t c_ff_t;
 
 struct ff_elem {
   ff_t ff;
@@ -19,23 +20,35 @@ struct ff_elem {
 };
 
 typedef struct ff_elem *ff_elem_t;
+typedef const ff_elem_t c_ff_elem_t;
 
-ff_elem_t ff_create_elem(ff_t ff);
-ff_elem_t ff_init_elem(ff_t ff, uint8_t *coeffs);
+extern struct p_ff_poly ff_2_8;
+extern struct p_ff_poly ff_2_16;
+extern struct p_ff_poly ff_2_32;
 
-ff_elem_t ff_get_zero(ff_t ff);
-ff_elem_t ff_get_identity(ff_t ff);
+extern const p_ff_poly_t p_ff_2_8;
+extern const p_ff_poly_t p_ff_2_16;
+extern const p_ff_poly_t p_ff_2_32;
 
-bool ff_are_eq(ff_t fst, ff_t snd);
-bool ff_elems_are_eq(ff_elem_t fst, ff_elem_t snd);
+ff_elem_t ff_create_elem(c_ff_t ff);
 
-ff_elem_t ff_add(ff_elem_t fst, ff_elem_t snd);
-ff_elem_t ff_sub(ff_elem_t fst, ff_elem_t snd);
-ff_elem_t ff_mult(ff_elem_t fst, ff_elem_t snd);
-ff_elem_t ff_div(ff_elem_t fst, ff_elem_t snd);
+ff_elem_t ff_get_zero(c_ff_t ff);
+ff_elem_t ff_get_identity(c_ff_t ff);
 
-ff_elem_t ff_inv_add(ff_elem_t elem);
-ff_elem_t ff_inv_mult(ff_elem_t fst, ff_elem_t snd);
+bool ff_are_eq(c_ff_t fst, c_ff_t snd);
+bool ff_elems_are_eq(c_ff_elem_t fst, c_ff_elem_t snd);
+
+ff_elem_t ff_add(c_ff_elem_t fst, c_ff_elem_t snd);
+ff_elem_t ff_sub(c_ff_elem_t fst, c_ff_elem_t snd);
+ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd);
+ff_elem_t ff_div(c_ff_elem_t fst, c_ff_elem_t snd);
+
+ff_elem_t ff_inv_add(c_ff_elem_t elem);
+ff_elem_t ff_inv_mult(c_ff_elem_t fst, c_ff_elem_t snd);
 
 void p_ff_poly_free(p_ff_poly_t poly);
 void ff_elem_free(ff_elem_t fst);
+
+ff_elem_t ff_2_8_init_elem(uint8_t coeffs);
+ff_elem_t ff_2_16_init_elem(uint16_t coeffs);
+ff_elem_t ff_2_32_init_elem(uint32_t coeffs);

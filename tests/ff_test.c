@@ -13,10 +13,6 @@ struct p_ff_poly ff_2_2 = {.p_ff = 2, .deg = 2, .coeffs = irr_poly_2_2};
 uint8_t irr_poly_2_4[] = {1, 0, 0, 1, 1};
 struct p_ff_poly ff_2_4 = {.p_ff = 2, .deg = 4, .coeffs = irr_poly_2_4};
 
-// x^8 + x^4 + x^3 + x^2 + 1
-uint8_t irr_poly_2_8[] = {1, 0, 0, 0, 1, 1, 1, 0, 1};
-struct p_ff_poly ff_2_8 = {.p_ff = 2, .deg = 8, .coeffs = irr_poly_2_8};
-
 // 2x^2 + 2
 uint8_t irr_poly_3_2[] = {2, 0, 2};
 struct p_ff_poly ff_3_2 = {.p_ff = 3, .deg = 2, .coeffs = irr_poly_3_2};
@@ -355,6 +351,93 @@ MU_TEST_SUITE(mult_tests) {
   MU_RUN_TEST(mult_special_ff_3_2);
 }
 
+MU_TEST(init_2_8_special) {
+  uint8_t expected[] = {1, 0, 0, 0, 0, 0, 1, 0};
+  ff_elem_t elem = ff_2_8_init_elem(130);
+  bool are_eq = elem->deg + 1 == 8 && !memcmp(elem->coeffs, expected, 8);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_8_identity) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 1};
+  ff_elem_t elem = ff_2_8_init_elem(1);
+  bool are_eq = elem->deg + 1 == 8 && !memcmp(elem->coeffs, expected, 8);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_8_zero) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 0};
+  ff_elem_t elem = ff_2_8_init_elem(0);
+  bool are_eq = elem->deg + 1 == 8 && !memcmp(elem->coeffs, expected, 8);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+MU_TEST(init_2_16_special) {
+  uint8_t expected[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+  ff_elem_t elem = ff_2_16_init_elem(65535);
+  bool are_eq = elem->deg + 1 == 16 && !memcmp(elem->coeffs, expected, 16);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_16_identity) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  ff_elem_t elem = ff_2_16_init_elem(1);
+  bool are_eq = elem->deg + 1 == 16 && !memcmp(elem->coeffs, expected, 16);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_16_zero) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  ff_elem_t elem = ff_2_16_init_elem(0);
+  bool are_eq = elem->deg + 1 == 16 && !memcmp(elem->coeffs, expected, 16);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+MU_TEST(init_2_32_special) {
+  uint8_t expected[] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  ff_elem_t elem = ff_2_32_init_elem(2147483649);
+  bool are_eq = elem->deg + 1 == 32 && !memcmp(elem->coeffs, expected, 32);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_32_identity) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  ff_elem_t elem = ff_2_32_init_elem(1);
+  bool are_eq = elem->deg + 1 == 32 && !memcmp(elem->coeffs, expected, 32);
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST(init_2_32_zero) {
+  uint8_t expected[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  ff_elem_t elem = ff_2_32_init_elem(0);
+
+  bool are_eq = (elem->deg == 31) && (!memcmp(elem->coeffs, expected, 32));
+
+  ff_elem_free(elem);
+  mu_check(are_eq);
+}
+
+MU_TEST_SUITE(init_tests) {
+  MU_RUN_TEST(init_2_8_special);
+  MU_RUN_TEST(init_2_8_identity);
+  MU_RUN_TEST(init_2_8_zero);
+  MU_RUN_TEST(init_2_16_special);
+  MU_RUN_TEST(init_2_16_identity);
+  MU_RUN_TEST(init_2_16_zero);
+  MU_RUN_TEST(init_2_32_special);
+  MU_RUN_TEST(init_2_32_identity);
+  MU_RUN_TEST(init_2_32_zero);
+}
+
 int main() {
   MU_RUN_SUITE(get_zero_tests);
   MU_RUN_SUITE(get_identity_tests);
@@ -362,6 +445,7 @@ int main() {
   MU_RUN_SUITE(inv_add_tests);
   MU_RUN_SUITE(sub_tests);
   MU_RUN_SUITE(mult_tests);
+  MU_RUN_SUITE(init_tests);
   MU_REPORT();
   return MU_EXIT_CODE;
 }
