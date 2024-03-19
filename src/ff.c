@@ -21,8 +21,14 @@ const p_ff_poly_t p_ff_2_8 = &ff_2_8;
 const p_ff_poly_t p_ff_2_16 = &ff_2_16;
 const p_ff_poly_t p_ff_2_32 = &ff_2_32;
 
-ff_elem_t ff_create_elem(c_ff_t ff) {
-  ff_elem_t elem = malloc(sizeof(struct ff_elem));
+static void *xmalloc(size_t n) {
+  void *res = malloc(n);
+  if (!res) exit(-1);
+  return res;
+}
+
+static ff_elem_t ff_create_elem(c_ff_t ff) {
+  ff_elem_t elem = xmalloc(sizeof(struct ff_elem));
   elem->ff = ff;
   elem->deg = ff->deg - 1;
   elem->coeffs = calloc(ff->deg, 1);
@@ -45,7 +51,7 @@ bool ff_are_eq(c_ff_t fst, c_ff_t snd) {
 }
 
 bool ff_elems_are_eq(c_ff_elem_t fst, c_ff_elem_t snd) {
-  return (fst->ff == snd->ff && fst->deg == snd->deg &&
+  return (ff_are_eq(fst->ff, snd->ff) && fst->deg == snd->deg &&
           !memcmp(fst->coeffs, snd->coeffs, fst->deg + 1));
 }
 
@@ -114,8 +120,8 @@ static uint64_t uint64_pow(uint64_t base, uint64_t power) {
   return res;
 }
 
-static int ff_real_deg(c_ff_elem_t elem) {
-  return real_deg(elem->deg, elem->coeffs);
+bool ff_is_zero(c_ff_elem_t elem) {
+  return real_deg(elem->deg, elem->coeffs) == -1 ? 1 : 0;
 }
 
 ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
@@ -153,10 +159,7 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
 }
 
 ff_elem_t ff_copy(c_ff_elem_t elem) {
-  ff_elem_t res = malloc(sizeof(struct ff_elem));
-  res->deg = elem->deg;
-  res->ff = elem->ff;
-  res->coeffs = calloc(res->deg + 1, 1);
+  ff_elem_t res = ff_create_elem(elem->ff);
   memcpy(res->coeffs, elem->coeffs, res->deg + 1);
 
   return res;
@@ -183,7 +186,7 @@ static ff_elem_t ff_elem_pow(c_ff_elem_t base, uint64_t power) {
 }
 
 ff_elem_t ff_inv_mult(c_ff_elem_t elem) {
-  if (!elem || ff_real_deg(elem) == -1) return NULL;
+  if (!elem || ff_is_zero(elem)) return NULL;
 
   return ff_elem_pow(elem, uint64_pow(elem->ff->p_ff, elem->ff->deg) - 2);
 }

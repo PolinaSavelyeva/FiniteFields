@@ -30,8 +30,8 @@ extern const p_ff_poly_t p_ff_2_8;
 extern const p_ff_poly_t p_ff_2_16;
 extern const p_ff_poly_t p_ff_2_32;
 
-ff_elem_t ff_create_elem(c_ff_t ff);
-ff_elem_t ff_copy (c_ff_elem_t elem);
+ff_elem_t ff_copy(c_ff_elem_t elem);
+bool ff_is_zero(c_ff_elem_t elem);
 
 ff_elem_t ff_get_zero(c_ff_t ff);
 ff_elem_t ff_get_identity(c_ff_t ff);
