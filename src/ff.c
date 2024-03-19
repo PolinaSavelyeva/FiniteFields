@@ -27,11 +27,17 @@ static void *xmalloc(size_t n) {
   return res;
 }
 
+static void *xcalloc(size_t nmemb, size_t size) {
+  void *res = calloc(nmemb, size);
+  if (!res) exit(-1);
+  return res;
+}
+
 static ff_elem_t ff_create_elem(c_ff_t ff) {
   ff_elem_t elem = xmalloc(sizeof(struct ff_elem));
   elem->ff = ff;
   elem->deg = ff->deg - 1;
-  elem->coeffs = calloc(ff->deg, 1);
+  elem->coeffs = xcalloc(ff->deg, 1);
 
   return elem;
 }
@@ -128,7 +134,7 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
   if (!fst || !snd || !ff_are_eq(fst->ff, snd->ff)) return NULL;
 
   uint8_t mult_deg = 2 * fst->deg;
-  uint8_t *coeffs = calloc(mult_deg + 1, 1);
+  uint8_t *coeffs = xcalloc(mult_deg + 1, 1);
 
   for (uint8_t i = 0; i <= fst->deg; i++) {
     for (uint8_t j = 0; j <= snd->deg; j++) {
