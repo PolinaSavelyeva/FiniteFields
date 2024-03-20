@@ -33,7 +33,7 @@ static void *xcalloc(size_t nmemb, size_t size) {
   return res;
 }
 
-static ff_elem_t ff_create_elem(c_ff_t ff) {
+static ff_elem_t ff_calloc_elem(c_ff_t ff) {
   ff_elem_t elem = xmalloc(sizeof(struct ff_elem));
   elem->ff = ff;
   elem->deg = ff->deg - 1;
@@ -42,10 +42,10 @@ static ff_elem_t ff_create_elem(c_ff_t ff) {
   return elem;
 }
 
-ff_elem_t ff_get_zero(c_ff_t ff) { return ff_create_elem(ff); }
+ff_elem_t ff_get_zero(c_ff_t ff) { return ff_calloc_elem(ff); }
 
 ff_elem_t ff_get_identity(c_ff_t ff) {
-  ff_elem_t identity = ff_create_elem(ff);
+  ff_elem_t identity = ff_calloc_elem(ff);
   identity->coeffs[identity->deg] = 1;
 
   return identity;
@@ -64,7 +64,7 @@ bool ff_elems_are_eq(c_ff_elem_t fst, c_ff_elem_t snd) {
 ff_elem_t ff_add(c_ff_elem_t fst, c_ff_elem_t snd) {
   if (!ff_are_eq(fst->ff, snd->ff)) return NULL;
 
-  ff_elem_t res = ff_create_elem(fst->ff);
+  ff_elem_t res = ff_calloc_elem(fst->ff);
 
   for (uint8_t i = 0; i < res->deg + 1; i++) {
     res->coeffs[i] = (fst->coeffs[i] + snd->coeffs[i]) % fst->ff->p_ff;
@@ -74,7 +74,7 @@ ff_elem_t ff_add(c_ff_elem_t fst, c_ff_elem_t snd) {
 }
 
 ff_elem_t ff_inv_add(c_ff_elem_t elem) {
-  ff_elem_t res = ff_create_elem(elem->ff);
+  ff_elem_t res = ff_calloc_elem(elem->ff);
 
   for (uint8_t i = 0; i < res->deg + 1; i++) {
     res->coeffs[i] = (elem->ff->p_ff - elem->coeffs[i]) % elem->ff->p_ff;
@@ -157,7 +157,7 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
     }
   }
 
-  ff_elem_t res = ff_create_elem(fst->ff);
+  ff_elem_t res = ff_calloc_elem(fst->ff);
   memcpy(res->coeffs, coeffs + fst->deg, fst->deg + 1);
   free(coeffs);
 
@@ -165,7 +165,7 @@ ff_elem_t ff_mult(c_ff_elem_t fst, c_ff_elem_t snd) {
 }
 
 ff_elem_t ff_copy(c_ff_elem_t elem) {
-  ff_elem_t res = ff_create_elem(elem->ff);
+  ff_elem_t res = ff_calloc_elem(elem->ff);
   memcpy(res->coeffs, elem->coeffs, res->deg + 1);
 
   return res;
@@ -209,7 +209,7 @@ ff_elem_t ff_div(c_ff_elem_t fst, c_ff_elem_t snd) {
 }
 
 ff_elem_t ff_2_8_init_elem(uint8_t coeffs) {
-  ff_elem_t res = ff_create_elem(&ff_2_8);
+  ff_elem_t res = ff_calloc_elem(&ff_2_8);
 
   uint8_t i = res->deg;
   while (coeffs) {
@@ -222,7 +222,7 @@ ff_elem_t ff_2_8_init_elem(uint8_t coeffs) {
 }
 
 ff_elem_t ff_2_16_init_elem(uint16_t coeffs) {
-  ff_elem_t res = ff_create_elem(&ff_2_16);
+  ff_elem_t res = ff_calloc_elem(&ff_2_16);
 
   uint8_t i = res->deg;
   while (coeffs) {
@@ -235,7 +235,7 @@ ff_elem_t ff_2_16_init_elem(uint16_t coeffs) {
 }
 
 ff_elem_t ff_2_32_init_elem(uint32_t coeffs) {
-  ff_elem_t res = ff_create_elem(&ff_2_32);
+  ff_elem_t res = ff_calloc_elem(&ff_2_32);
 
   uint8_t i = res->deg;
   while (coeffs) {

@@ -11,16 +11,16 @@ struct p_ff_poly {
 
 typedef struct p_ff_poly *p_ff_poly_t;
 typedef struct p_ff_poly *ff_t;
-typedef const ff_t c_ff_t;
+typedef struct p_ff_poly const *c_ff_t;
 
 struct ff_elem {
-  ff_t ff;
+  c_ff_t ff;
   uint8_t deg;
   uint8_t *coeffs;
 };
 
 typedef struct ff_elem *ff_elem_t;
-typedef const ff_elem_t c_ff_elem_t;
+typedef struct ff_elem const *c_ff_elem_t;
 
 extern struct p_ff_poly ff_2_8;
 extern struct p_ff_poly ff_2_16;
